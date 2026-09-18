@@ -182,24 +182,3 @@ app.post("/sincronizar", async (req, res) => {
 app.listen(3000, () => {
   console.log("Servidor corriendo en http://localhost:3000");
 });
-
-app.get("/ver-html", async (req, res) => {
-  try {
-    const correos = await buscarCorreosDelBanco();
-    for (const correo of correos) {
-      const contenido = await obtenerContenidoCorreo(correo.id);
-      const tipo = identificarTipo(contenido.texto);
-      
-      // Solo queremos ver el HTML de las internas que están fallando
-      if (tipo === "transferencia_interna") {
-        console.log("================ INICIO HTML ================");
-        console.log(contenido.texto);
-        console.log("================ FIN HTML ================");
-        return res.send("Revisa la terminal de VS Code y copia el HTML que se imprimió.");
-      }
-    }
-    res.send("No se encontraron transferencias internas.");
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
