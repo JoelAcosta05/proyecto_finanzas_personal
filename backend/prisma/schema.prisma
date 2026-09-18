@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id              Int          @id @default(autoincrement())
+  nombre          String
+  correoGmail     String       @unique @map("correo_gmail")
+  cuentaPrincipal String?      @map("cuenta_principal") // Ej: "3253"
+  cuentaFlexible  String?      @map("cuenta_flexible")  // Ej: "9610"
+  movimientos     Movimiento[]
+
+  @@map("usuarios")
+}
+
+model Movimiento {
+  id          Int      @id @default(autoincrement())
+  usuarioId   Int      @map("usuario_id")
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  tipo        String
+  monto       Decimal  @db.Decimal(10, 2)
+  categoria   String
+  fecha       DateTime @db.Timestamptz
+  descripcion String?
+  gmailId     String?  @unique @map("gmail_id") // <- NUEVO: Guarda el ID del correo
+
+  @@map("movimientos")
+}
